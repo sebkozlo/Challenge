@@ -10,22 +10,17 @@ path = './temp_image.jpg'
 
 
 class ReadNumberFromImage:
-    """ A class used to download and prepper image to read text(number)"""
+    
 
     def image_download(self):
-        """ Method download image from url and save it in path""" 
+        """Download image from url and save it in path""" 
 
         request.urlretrieve(url_image, path)
         image = cv2.imread(path)
         cv2.imshow('Image to read', image)
         
     def image_convert(self):
-        """ Method converts image to readable text - crop, change to grayscale, 
-            add gaussian blur and treshold image.
-            At this moment i must manualny add trajectory to crop image. 
-            Tesseract can't find any text in full size image. 
-            Maybe later I will try different settings or library.
-        """
+        """Converts image to readable text"""
         #-- Image crop
         image = cv2.imread(path) 
         image_crop = image[150:265, 280:440]
@@ -64,7 +59,7 @@ class ReadNumberFromImage:
         
 
     def create_new_url(self):
-        """Easyest way to change url is use replace method"""
+        """Change url using replace method"""
         
         url_to_convert = url_website
         number = ReadNumberFromImage().number_exponentiation()
