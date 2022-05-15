@@ -1,6 +1,7 @@
 import cv2
 import pytesseract
 from urllib import request
+import os
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
@@ -68,10 +69,19 @@ class ExponentiationLinkGenerator():
         self.url_to_convert = url_to_convert
         self.exponentiation_result = exponentiation_result
         self.new_url = self.url_to_convert.replace('0', str(self.exponentiation_result))
+        self.new_url = str(self.new_url)
         print(self.new_url)
+        
+
+    def open_web_browser_new_url(self, url):
+        self.url = url
+        url = str(self.new_url)
+        os.system('start chrome ' + self.new_url)
+
 
 image_number_reader = ImageNumberReader(url_image, path)
 image_number_reader.read_number_from_url()
 exponentiation_link_generator = ExponentiationLinkGenerator(image_number_reader.number)
 exponentiation_link_generator.number_exponentiation(image_number_reader.read_number())
 exponentiation_link_generator.create_new_url(url_website, exponentiation_link_generator.exponentiation_result)
+exponentiation_link_generator.open_web_browser_new_url(ExponentiationLinkGenerator.create_new_url)
