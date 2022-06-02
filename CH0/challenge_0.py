@@ -1,4 +1,5 @@
 import cv2
+from numpy import number
 import pytesseract
 from urllib import request
 import requests
@@ -29,8 +30,7 @@ class ImageNumberReader:
         """ Convert image to be readable by tersseract."""
 
         self.__image_croping(150, 260, 265, 440)
-        # self.__image_grayscaling()
-        self.__image_tresholding()
+        self.__image_thresholding(255, 121)
 
              
     def __image_croping(self, start_x= 150, end_x= 260, start_y= 265,  end_y= 440 ):
@@ -55,30 +55,29 @@ class ImageNumberReader:
         cv2.imwrite(path, image_to_crop)
 
 
-    def __image_grayscaling(self):       
-        """ Changing image to grayscale. """
+    def __image_thresholding(self, white_level = 255, block_size = 111):
+        """ Changing image to 8-bit grayscale an add threshold."""
 
-        image_to_grayscale = cv2.imread(path)
-        image_to_grayscale = cv2.cvtColor(image_to_grayscale, cv2.COLOR_BGR2GRAY)
-        cv2.imwrite(path, image_to_grayscale)
+        assert white_level <= 255, f'White level must be between 0-255'
+        assert white_level >= 0, f'White level must be between 0-255'
+        assert block_size <= 255, f'Pixel block must be odd number between 0-255'
+        assert block_size % 2 > 0 , f'Pixel block must be odd number'
 
+        self.white_level = white_level
+        self.block_size = block_size
 
-    def __image_tresholding(self):
-        """ Change image to 8-bit"""
-
-        image_to_treshold = cv2.imread(path, 0)
-        image_to_treshold = cv2.adaptiveThreshold(image_to_treshold, 255, 
-        cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 111, 30)
-        
-        cv2.imwrite(path, image_to_treshold) 
-        cv2.imshow('Image treshold', image_to_treshold)
-
+        image_to_threshold = cv2.imread(path, 0) # 0 parameter change image to grayscale image
+        image_to_threshold = cv2.adaptiveThreshold(image_to_threshold, white_level, 
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, block_size, 30) # 111, 30
+        cv2.imwrite(path, image_to_threshold) 
+        cv2.imshow('Image treshold', image_to_threshold)
         cv2.waitKey(0)
         #cv2.destroyAllWindows()
 
-#     def read_number(self):        
-#         self.number = pytesseract.image_to_string(path)
-#         return int(self.number)
+    def read_number(self):        
+        number = pytesseract.image_to_string(path)
+        print(number)
+        return int(number)
 
 
 # class ExponentiationLinkGenerator():
@@ -110,6 +109,7 @@ def main():
     image_number_reader = ImageNumberReader(url_image, path)
     image_number_reader.download_image_from_url_to_path()
     image_number_reader.image_convert_to_read_number()
+    image_number_reader.read_number()
     
 
 if __name__ == "__main__":
